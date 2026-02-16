@@ -17,8 +17,8 @@ public class CartaoController {
     private CartaoService service;
 
     @GetMapping
-    public List<Cartao> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<Cartao>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
@@ -29,8 +29,8 @@ public class CartaoController {
     }
 
     @PostMapping
-    public Cartao save(@RequestBody Cartao cartao) {
-        return service.save(cartao);
+    public ResponseEntity<Cartao> save(@RequestBody Cartao cartao) {
+        return ResponseEntity.ok(service.save(cartao));
     }
 
     @DeleteMapping("/{id}")

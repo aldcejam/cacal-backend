@@ -17,8 +17,8 @@ public class ReceitaController {
     private ReceitaService service;
 
     @GetMapping
-    public List<Receita> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<Receita>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")

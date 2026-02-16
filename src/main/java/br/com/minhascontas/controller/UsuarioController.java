@@ -17,8 +17,8 @@ public class UsuarioController {
     private UsuarioService service;
 
     @GetMapping
-    public List<Usuario> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<Usuario>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
@@ -29,8 +29,8 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public Usuario save(@RequestBody Usuario usuario) {
-        return service.save(usuario);
+    public ResponseEntity<Usuario> save(@RequestBody Usuario usuario) {
+        return ResponseEntity.ok(service.save(usuario));
     }
     
     @DeleteMapping("/{id}")

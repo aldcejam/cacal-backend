@@ -17,8 +17,8 @@ public class TransacaoController {
     private TransacaoService service;
 
     @GetMapping
-    public List<Transacao> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<Transacao>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
@@ -29,8 +29,8 @@ public class TransacaoController {
     }
 
     @PostMapping
-    public Transacao save(@RequestBody Transacao transacao) {
-        return service.save(transacao);
+    public ResponseEntity<Transacao> save(@RequestBody Transacao transacao) {
+        return ResponseEntity.ok(service.save(transacao));
     }
 
     @DeleteMapping("/{id}")

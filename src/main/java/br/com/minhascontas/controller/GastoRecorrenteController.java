@@ -17,8 +17,8 @@ public class GastoRecorrenteController {
     private GastoRecorrenteService service;
 
     @GetMapping
-    public List<GastoRecorrente> findAll() {
-        return service.findAll();
+    public ResponseEntity<List<GastoRecorrente>> findAll() {
+        return ResponseEntity.ok(service.findAll());
     }
 
     @GetMapping("/{id}")
@@ -29,8 +29,8 @@ public class GastoRecorrenteController {
     }
 
     @PostMapping
-    public GastoRecorrente save(@RequestBody GastoRecorrente gastoRecorrente) {
-        return service.save(gastoRecorrente);
+    public ResponseEntity<GastoRecorrente> save(@RequestBody GastoRecorrente gastoRecorrente) {
+        return ResponseEntity.ok(service.save(gastoRecorrente));
     }
 
     @DeleteMapping("/{id}")
