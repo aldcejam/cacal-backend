@@ -20,16 +20,15 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired private TransacaoRepository transacaoRepository;
     @Autowired private ReceitaRepository receitaRepository;
     @Autowired private GastoRecorrenteRepository gastoRecorrenteRepository;
+    @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
         if (usuarioRepository.count() == 0) {
             // Users
-            Usuario u1 = new Usuario("u1", "João Silva", "joao@example.com");
-            Usuario u2 = new Usuario("u2", "Maria Santos", "maria@example.com");
-            Usuario u3 = new Usuario("u3", "Pedro Costa", "pedro@example.com");
-            Usuario u4 = new Usuario("u4", "Ana Oliveira", "ana@example.com");
+            Usuario u1 = new Usuario("u1", "João Silva", "joao@example.com", passwordEncoder.encode("123456"), "USER");
+            Usuario u2 = new Usuario("u2", "Maria Santos", "maria@example.com", passwordEncoder.encode("123456"), "USER");
             usuarioRepository.saveAll(Arrays.asList(u1, u2, u3, u4));
 
             // Banks
