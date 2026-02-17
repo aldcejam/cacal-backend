@@ -7,18 +7,19 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "transacoes")
-public class Transacao {
-    @Id
-    private String id;
+@EqualsAndHashCode(callSuper = true)
+public class Transacao extends BaseEntity<UUID> {
     
     @ManyToOne
     @JoinColumn(name = "card_id")

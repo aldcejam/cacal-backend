@@ -32,7 +32,7 @@ public class AuthService {
         }
 
         Usuario usuario = new Usuario();
-        usuario.setId(UUID.randomUUID().toString());
+        usuario.setId(UUID.randomUUID());
         usuario.setName(request.getName());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
