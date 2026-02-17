@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
-@CrossOrigin(origins = "*") // Allow frontend access
+
 public class UsuarioController {
 
     @Autowired

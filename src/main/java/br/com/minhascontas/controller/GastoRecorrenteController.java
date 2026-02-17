@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/gastosRecorrentes") // Updated to match db.json key if needed or camelCase
-@CrossOrigin(origins = "*")
+
 public class GastoRecorrenteController {
 
     @Autowired
