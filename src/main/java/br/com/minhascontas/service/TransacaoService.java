@@ -37,6 +37,13 @@ public class TransacaoService {
         return repository.save(transacao);
     }
 
+    public  List<Transacao> findByUserId(UUID userId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Specification<Transacao> spec = Specification.where(EntitySpecification.<Transacao>filterByUser(email))
+                .and((root, query, cb) -> cb.equal(root.get("usuario").get("id"), userId));
+        return repository.findAll(spec);
+    }
+
     public void deleteById(UUID id) {
         repository.deleteById(id);
     }
