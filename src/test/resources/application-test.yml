@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    # URL will be set by the Testcontainers instance at runtime
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# We can also mock JWT properties for the testing context
+application:
+  security:
+    jwt:
+      secret-key: aW52YWxpZC1zZWNyZXQta2V5LWdpdmVuLWJ5LXRlc3QtY29udGV4dC1mb3ItamF2YQ==
+      expiration: 86400000
+      cookie-secure: false
