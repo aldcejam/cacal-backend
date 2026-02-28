@@ -23,5 +23,5 @@ public class Usuario extends BaseEntity<UUID> {
     private String name;
     private String email;
     private String password;
-    private String role; // For simplicity, single role for now. Could be Set<String> roles.
+    private String role;
 }
