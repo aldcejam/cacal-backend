@@ -1,10 +1,6 @@
 package br.com.minhascontas.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,14 +16,23 @@ import java.util.UUID;
 @Table(name = "transacoes")
 @EqualsAndHashCode(callSuper = true)
 public class Transacao extends BaseEntity<UUID> {
-    
+
     @ManyToOne
-    @JoinColumn(name = "card_id")
+    @JoinColumn(name = "card_id", nullable = false)
     private Cartao card;
 
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private String category;
+
+    @Column(nullable = false)
     private BigDecimal value;
+
+    @Column(nullable = false)
     private String parcels;
+
+    @Column(nullable = false)
     private BigDecimal total;
 }

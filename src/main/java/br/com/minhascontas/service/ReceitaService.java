@@ -1,7 +1,9 @@
 package br.com.minhascontas.service;
 
 import br.com.minhascontas.model.Receita;
+import br.com.minhascontas.model.Usuario;
 import br.com.minhascontas.repository.ReceitaRepository;
+import br.com.minhascontas.repository.UsuarioRepository;
 import br.com.minhascontas.specification.EntitySpecification;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,9 @@ public class ReceitaService {
 
     @Autowired
     private ReceitaRepository repository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public List<Receita> findAll(LocalDateTime start, LocalDateTime end) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -39,5 +44,10 @@ public class ReceitaService {
 
     public void deleteById(UUID id) {
         repository.deleteById(id);
+    }
+
+    public Usuario findUsuarioById(UUID userId) {
+        return usuarioRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userId));
     }
 }

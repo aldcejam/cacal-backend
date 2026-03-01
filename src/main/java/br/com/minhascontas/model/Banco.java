@@ -1,7 +1,7 @@
 package br.com.minhascontas.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,9 +18,19 @@ import java.util.UUID;
 @Table(name = "bancos")
 @EqualsAndHashCode(callSuper = true)
 public class Banco extends BaseEntity<UUID> {
+
+    @Column(nullable = false)
     private String name;
-    private BigDecimal limitValue; // 'limit' is a reserved keyword in some DBs
+
+    @Column(nullable = false)
+    private BigDecimal limitValue;
+
+    @Column(nullable = false)
     private String dueDate;
+
+    @Column(nullable = false)
     private String closingDate;
+
+    @Column(nullable = false)
     private String color;
 }

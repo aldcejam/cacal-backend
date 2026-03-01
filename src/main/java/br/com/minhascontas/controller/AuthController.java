@@ -1,9 +1,10 @@
 package br.com.minhascontas.controller;
 
-import br.com.minhascontas.dto.AuthResponse;
-import br.com.minhascontas.dto.LoginRequest;
-import br.com.minhascontas.dto.RegisterRequest;
+import br.com.minhascontas.dto.auth.AuthRes;
+import br.com.minhascontas.dto.auth.LoginReq;
+import br.com.minhascontas.dto.auth.RegisterReq;
 import br.com.minhascontas.service.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -28,21 +29,21 @@ public class AuthController {
     private boolean cookieSecure;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
-        AuthResponse authResponse = authService.register(request);
-        return createCookieResponse(authResponse);
+    public ResponseEntity<AuthRes> register(@Valid @RequestBody RegisterReq request) {
+        AuthRes authRes = authService.register(request);
+        return createCookieResponse(authRes);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        AuthResponse authResponse = authService.login(request);
-        return createCookieResponse(authResponse);
+    public ResponseEntity<AuthRes> login(@Valid @RequestBody LoginReq request) {
+        AuthRes authRes = authService.login(request);
+        return createCookieResponse(authRes);
     }
 
-    private ResponseEntity<AuthResponse> createCookieResponse(AuthResponse authResponse) {
+    private ResponseEntity<AuthRes> createCookieResponse(AuthRes authRes) {
         long maxAgeInSeconds = jwtExpiration / 1000;
 
-        ResponseCookie jwtCookie = ResponseCookie.from("token", authResponse.getAccessToken())
+        ResponseCookie jwtCookie = ResponseCookie.from("token", authRes.getAccessToken())
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")
@@ -52,6 +53,6 @@ public class AuthController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(authResponse);
+                .body(authRes);
     }
 }

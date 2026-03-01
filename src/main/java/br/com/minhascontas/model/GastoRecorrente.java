@@ -1,10 +1,6 @@
 package br.com.minhascontas.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,11 +18,18 @@ import java.util.UUID;
 public class GastoRecorrente extends BaseEntity<UUID> {
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private Usuario user;
 
+    @Column(nullable = false)
     private String pagamento;
+
+    @Column(nullable = false)
     private String descricao;
+
+    @Column(nullable = false)
     private String categoria;
+
+    @Column(nullable = false)
     private BigDecimal valor;
 }
