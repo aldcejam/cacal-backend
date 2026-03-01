@@ -15,24 +15,39 @@ import java.util.UUID;
 @Component
 public class DataSeeder implements CommandLineRunner {
 
-    @Autowired private UsuarioRepository usuarioRepository;
-    @Autowired private BancoRepository bancoRepository;
-    @Autowired private CartaoRepository cartaoRepository;
-    @Autowired private TransacaoRepository transacaoRepository;
-    @Autowired private ReceitaRepository receitaRepository;
-    @Autowired private GastoRecorrenteRepository gastoRecorrenteRepository;
-    @Autowired private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private BancoRepository bancoRepository;
+    @Autowired
+    private CartaoRepository cartaoRepository;
+    @Autowired
+    private TransacaoRepository transacaoRepository;
+    @Autowired
+    private ReceitaRepository receitaRepository;
+    @Autowired
+    private GastoRecorrenteRepository gastoRecorrenteRepository;
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void run(String... args) throws Exception {
         if (usuarioRepository.count() == 0) {
             // Users
-            Usuario u1 = new Usuario("João Silva", "joao@example.com", passwordEncoder.encode("123456"), "USER");
+            Usuario u1 = new Usuario();
             u1.setId(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
+            u1.setName("João Silva");
+            u1.setEmail("joao@example.com");
+            u1.setPassword(passwordEncoder.encode("123456"));
+            u1.setRole("USER");
 
-            Usuario u2 = new Usuario("Maria Santos", "maria@example.com", passwordEncoder.encode("123456"), "USER");
+            Usuario u2 = new Usuario();
             u2.setId(UUID.fromString("123e4567-e89b-12d3-a456-426614174001"));
+            u2.setName("Maria Santos");
+            u2.setEmail("maria@example.com");
+            u2.setPassword(passwordEncoder.encode("123456"));
+            u2.setRole("USER");
             usuarioRepository.saveAll(Arrays.asList(u1, u2));
 
             // Banks
@@ -47,27 +62,34 @@ public class DataSeeder implements CommandLineRunner {
             bancoRepository.saveAll(Arrays.asList(b1, b2, b3));
 
             // Cards
-            Cartao c1 = new Cartao("1234", new BigDecimal("5000"), new BigDecimal("2660"), LocalDate.parse("2023-10-10"), LocalDate.parse("2023-10-05"), u1, b1);
+            Cartao c1 = new Cartao("1234", new BigDecimal("5000"), new BigDecimal("2660"),
+                    LocalDate.parse("2023-10-10"), LocalDate.parse("2023-10-05"), u1, b1);
             c1.setId(UUID.fromString("323e4567-e89b-12d3-a456-426614174000"));
 
-            Cartao c2 = new Cartao("5678", new BigDecimal("8000"), new BigDecimal("3440"), LocalDate.parse("2023-10-15"), LocalDate.parse("2023-10-10"), u2, b2);
+            Cartao c2 = new Cartao("5678", new BigDecimal("8000"), new BigDecimal("3440"),
+                    LocalDate.parse("2023-10-15"), LocalDate.parse("2023-10-10"), u2, b2);
             c2.setId(UUID.fromString("323e4567-e89b-12d3-a456-426614174001"));
             cartaoRepository.saveAll(Arrays.asList(c1, c2));
 
             // Transactions
-            Transacao t1 = new Transacao(c1, "Amazon Prime", "Streaming", new BigDecimal("14.90"), "1/1", new BigDecimal("14.90"));
+            Transacao t1 = new Transacao(c1, "Amazon Prime", "Streaming", new BigDecimal("14.90"), "1/1",
+                    new BigDecimal("14.90"));
             t1.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174000"));
 
-            Transacao t2 = new Transacao(c1, "iFood", "Alimentação", new BigDecimal("45.50"), "1/1", new BigDecimal("45.50"));
+            Transacao t2 = new Transacao(c1, "iFood", "Alimentação", new BigDecimal("45.50"), "1/1",
+                    new BigDecimal("45.50"));
             t2.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174001"));
 
-            Transacao t3 = new Transacao(c2, "Notebook Dell", "Eletrônicos", new BigDecimal("299.90"), "3/12", new BigDecimal("3598.80"));
+            Transacao t3 = new Transacao(c2, "Notebook Dell", "Eletrônicos", new BigDecimal("299.90"), "3/12",
+                    new BigDecimal("3598.80"));
             t3.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174002"));
 
-            Transacao t4 = new Transacao(c2, "Spotify", "Streaming", new BigDecimal("21.90"), "1/1", new BigDecimal("21.90"));
+            Transacao t4 = new Transacao(c2, "Spotify", "Streaming", new BigDecimal("21.90"), "1/1",
+                    new BigDecimal("21.90"));
             t4.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174003"));
 
-            Transacao t7 = new Transacao(c1, "Netflix", "Streaming", new BigDecimal("55.90"), "1/1", new BigDecimal("55.90"));
+            Transacao t7 = new Transacao(c1, "Netflix", "Streaming", new BigDecimal("55.90"), "1/1",
+                    new BigDecimal("55.90"));
             t7.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174004"));
             transacaoRepository.saveAll(Arrays.asList(t1, t2, t3, t4, t7));
 
@@ -92,16 +114,20 @@ public class DataSeeder implements CommandLineRunner {
             receitaRepository.saveAll(Arrays.asList(r1, r2, r3, r4, r5, r6));
 
             // Recurring Expenses
-            GastoRecorrente gr1 = new GastoRecorrente(u1, "Cartão de Crédito", "Netflix", "Streaming", new BigDecimal("55.90"));
+            GastoRecorrente gr1 = new GastoRecorrente(u1, "Cartão de Crédito", "Netflix", "Streaming",
+                    new BigDecimal("55.90"));
             gr1.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174000"));
 
-            GastoRecorrente gr2 = new GastoRecorrente(u1, "Débito Automático", "Academia SmartFit", "Saúde", new BigDecimal("89.90"));
+            GastoRecorrente gr2 = new GastoRecorrente(u1, "Débito Automático", "Academia SmartFit", "Saúde",
+                    new BigDecimal("89.90"));
             gr2.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174001"));
 
-            GastoRecorrente gr3 = new GastoRecorrente(u2, "PIX", "Spotify Premium", "Streaming", new BigDecimal("21.90"));
+            GastoRecorrente gr3 = new GastoRecorrente(u2, "PIX", "Spotify Premium", "Streaming",
+                    new BigDecimal("21.90"));
             gr3.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174002"));
 
-            GastoRecorrente gr4 = new GastoRecorrente(u2, "Cartão de Crédito", "Amazon Prime", "Streaming", new BigDecimal("14.90"));
+            GastoRecorrente gr4 = new GastoRecorrente(u2, "Cartão de Crédito", "Amazon Prime", "Streaming",
+                    new BigDecimal("14.90"));
             gr4.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174003"));
             gastoRecorrenteRepository.saveAll(Arrays.asList(gr1, gr2, gr3, gr4));
 

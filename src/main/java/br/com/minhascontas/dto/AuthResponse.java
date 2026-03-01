@@ -1,5 +1,6 @@
 package br.com.minhascontas.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,5 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthResponse {
-    private String token;
+
+    @JsonProperty("access_token")
+    private String accessToken;
+
+    private UserResponse user;
 }

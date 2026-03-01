@@ -3,6 +3,7 @@ package br.com.minhascontas.service;
 import br.com.minhascontas.dto.AuthResponse;
 import br.com.minhascontas.dto.LoginRequest;
 import br.com.minhascontas.dto.RegisterRequest;
+import br.com.minhascontas.dto.UserResponse;
 import br.com.minhascontas.model.Usuario;
 import br.com.minhascontas.repository.UsuarioRepository;
 import br.com.minhascontas.security.JwtTokenProvider;
@@ -43,20 +44,31 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(usuario.getEmail());
         String token = jwtTokenProvider.generateToken(userDetails);
 
-        return new AuthResponse(token);
+        return buildAuthResponse(token, usuario);
     }
 
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
-                        request.getPassword()
-                )
-        );
+                        request.getPassword()));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
         String token = jwtTokenProvider.generateToken(userDetails);
 
-        return new AuthResponse(token);
+        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return buildAuthResponse(token, usuario);
+    }
+
+    private AuthResponse buildAuthResponse(String token, Usuario usuario) {
+        UserResponse userResponse = new UserResponse(
+                usuario.getId(),
+                usuario.getName(),
+                usuario.getEmail(),
+                usuario.getRole(),
+                usuario.getAvatarUrl());
+        return new AuthResponse(token, userResponse);
     }
 }

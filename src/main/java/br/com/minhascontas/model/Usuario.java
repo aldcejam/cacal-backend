@@ -8,9 +8,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @Data
@@ -24,4 +21,5 @@ public class Usuario extends BaseEntity<UUID> {
     private String email;
     private String password;
     private String role;
+    private String avatarUrl;
 }

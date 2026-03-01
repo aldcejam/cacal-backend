@@ -42,7 +42,7 @@ public class AuthController {
     private ResponseEntity<AuthResponse> createCookieResponse(AuthResponse authResponse) {
         long maxAgeInSeconds = jwtExpiration / 1000;
 
-        ResponseCookie jwtCookie = ResponseCookie.from("token", authResponse.getToken())
+        ResponseCookie jwtCookie = ResponseCookie.from("token", authResponse.getAccessToken())
                 .httpOnly(true)
                 .secure(cookieSecure)
                 .path("/")
