@@ -3,6 +3,8 @@ package br.com.myaccounts.service;
 import br.com.myaccounts.model.Transaction;
 import br.com.myaccounts.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,52 +57,86 @@ public class TransactionServiceTest {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    @Test
-    void shouldFindAllWithDateRange() {
-        mockSecurityContext();
-        LocalDateTime start = LocalDateTime.now().minusDays(10);
-        LocalDateTime end = LocalDateTime.now();
+    @Nested
+    @DisplayName("Method FindAll")
+    class FindAll {
 
-        when(transactionRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(transaction));
+        @Test
+        @DisplayName("Should return transactions within the period with authenticated user")
+        void shouldFindTransactionsWithinPeriod() {
+            // GIVEN
+            mockSecurityContext();
+            LocalDateTime start = LocalDateTime.now().minusDays(10);
+            LocalDateTime end = LocalDateTime.now();
+            when(transactionRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(transaction));
 
-        List<Transaction> result = transactionService.findAll(start, end);
+            // WHEN
+            List<Transaction> result = transactionService.findAll(start, end);
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Test Transaction", result.get(0).getDescription());
-        verify(transactionRepository, times(1)).findAll(any(Specification.class));
+            // THEN
+            assertNotNull(result);
+            assertEquals(1, result.size());
+            assertEquals("Test Transaction", result.get(0).getDescription());
+            verify(transactionRepository, times(1)).findAll(any(Specification.class));
+        }
     }
 
-    @Test
-    void shouldFindById() {
-        mockSecurityContext();
+    @Nested
+    @DisplayName("Method FindById")
+    class FindById {
 
-        when(transactionRepository.findOne(any(Specification.class))).thenReturn(Optional.of(transaction));
+        @Test
+        @DisplayName("Should return transaction when it exists and user has permission")
+        void shouldReturnTransaction_whenFoundAndAllowed() {
+            // GIVEN
+            mockSecurityContext();
+            when(transactionRepository.findOne(any(Specification.class))).thenReturn(Optional.of(transaction));
 
-        Optional<Transaction> result = transactionService.findById(TRAN_ID);
+            // WHEN
+            Optional<Transaction> result = transactionService.findById(TRAN_ID);
 
-        assertTrue(result.isPresent());
-        assertEquals(TRAN_ID, result.get().getId());
-        verify(transactionRepository, times(1)).findOne(any(Specification.class));
+            // THEN
+            assertTrue(result.isPresent());
+            assertEquals(TRAN_ID, result.get().getId());
+            verify(transactionRepository, times(1)).findOne(any(Specification.class));
+        }
     }
 
-    @Test
-    void shouldSaveTransaction() {
-        when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
+    @Nested
+    @DisplayName("Method Save")
+    class Save {
 
-        Transaction result = transactionService.save(transaction);
+        @Test
+        @DisplayName("Should save and return transaction successfully")
+        void shouldSaveSuccessfully() {
+            // GIVEN
+            when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
 
-        assertNotNull(result);
-        assertEquals("Test Transaction", result.getDescription());
-        verify(transactionRepository, times(1)).save(any(Transaction.class));
+            // WHEN
+            Transaction result = transactionService.save(transaction);
+
+            // THEN
+            assertNotNull(result);
+            assertEquals("Test Transaction", result.getDescription());
+            verify(transactionRepository, times(1)).save(any(Transaction.class));
+        }
     }
 
-    @Test
-    void shouldDeleteById() {
-        doNothing().when(transactionRepository).deleteById(TRAN_ID);
+    @Nested
+    @DisplayName("Method DeleteById")
+    class DeleteById {
 
-        transactionService.deleteById(TRAN_ID);
+        @Test
+        @DisplayName("Should delete the transaction by ID")
+        void shouldDeleteSuccessfully() {
+            // GIVEN
+            doNothing().when(transactionRepository).deleteById(TRAN_ID);
 
-        verify(transactionRepository, times(1)).deleteById(TRAN_ID);
+            // WHEN
+            transactionService.deleteById(TRAN_ID);
+
+            // THEN
+            verify(transactionRepository, times(1)).deleteById(TRAN_ID);
+        }
     }
 }

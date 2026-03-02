@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 public abstract class BaseEntity<ID> {
 
     @Id
+    @jakarta.persistence.GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     private ID id;
 
     @CreatedDate

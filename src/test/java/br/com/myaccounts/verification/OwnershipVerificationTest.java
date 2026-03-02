@@ -40,7 +40,23 @@ public class OwnershipVerificationTest extends IntegrationTest {
     private BankRepository bankRepository;
 
     @Autowired
+    private br.com.myaccounts.repository.IncomeRepository incomeRepository;
+
+    @Autowired
+    private br.com.myaccounts.repository.RecurringExpenseRepository recurringExpenseRepository;
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @org.junit.jupiter.api.BeforeEach
+    void setup() {
+        transactionRepository.deleteAll();
+        cardRepository.deleteAll();
+        incomeRepository.deleteAll();
+        recurringExpenseRepository.deleteAll();
+        userRepository.deleteAll();
+        bankRepository.deleteAll();
+    }
 
     private Bank createTestBank(String name) {
         Bank bank = new Bank();
@@ -173,7 +189,7 @@ public class OwnershipVerificationTest extends IntegrationTest {
 
         // Force the created_at to be in the past
         LocalDateTime pastDate = LocalDateTime.now().minusMonths(1);
-        jdbcTemplate.update("UPDATE transacoes SET created_at = ? WHERE id = ?", pastDate, tOld.getId());
+        jdbcTemplate.update("UPDATE transactions SET created_at = ? WHERE id = ?", pastDate, tOld.getId());
 
         // Create Transaction Today
         Transaction tNow = new Transaction();
