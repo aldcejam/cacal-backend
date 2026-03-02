@@ -8,10 +8,10 @@
 		<version>3.2.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>br.com.minhascontas</groupId>
-	<artifactId>minhas-contas-backend</artifactId>
+	<groupId>br.com.myaccounts</groupId>
+	<artifactId>my-accounts-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>minhas-contas-backend</name>
+	<name>my-accounts-backend</name>
 	<description>Backend for Minhas Contas</description>
 	<properties>
 		<java.version>17</java.version>
