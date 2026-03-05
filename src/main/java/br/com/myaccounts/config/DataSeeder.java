@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -17,16 +16,10 @@ public class DataSeeder implements CommandLineRunner {
 
         @Autowired
         private UserRepository userRepository;
+
         @Autowired
         private BankRepository bankRepository;
-        @Autowired
-        private CardRepository cardRepository;
-        @Autowired
-        private TransactionRepository transactionRepository;
-        @Autowired
-        private IncomeRepository incomeRepository;
-        @Autowired
-        private RecurringExpenseRepository recurringExpenseRepository;
+
         @Autowired
         private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
@@ -68,78 +61,6 @@ public class DataSeeder implements CommandLineRunner {
                         Bank b3 = new Bank("Bank Inter", new BigDecimal("4000"), "12", "25", "#FF8800");
                         b3.setId(UUID.fromString("223e4567-e89b-12d3-a456-426614174002"));
                         bankRepository.saveAll(Arrays.asList(b1, b2, b3));
-
-                        // Cards
-                        Card c1 = new Card("1234", new BigDecimal("5000"), new BigDecimal("2660"),
-                                        LocalDate.parse("2023-10-10"), LocalDate.parse("2023-10-05"), u1, b1);
-                        c1.setId(UUID.fromString("323e4567-e89b-12d3-a456-426614174000"));
-
-                        Card c2 = new Card("5678", new BigDecimal("8000"), new BigDecimal("3440"),
-                                        LocalDate.parse("2023-10-15"), LocalDate.parse("2023-10-10"), u2, b2);
-                        c2.setId(UUID.fromString("323e4567-e89b-12d3-a456-426614174001"));
-                        cardRepository.saveAll(Arrays.asList(c1, c2));
-
-                        // Transactions
-                        Transaction t1 = new Transaction(c1, "Amazon Prime", "Streaming", new BigDecimal("14.90"),
-                                        "1/1",
-                                        new BigDecimal("14.90"));
-                        t1.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174000"));
-
-                        Transaction t2 = new Transaction(c1, "iFood", "Food", new BigDecimal("45.50"), "1/1",
-                                        new BigDecimal("45.50"));
-                        t2.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174001"));
-
-                        Transaction t3 = new Transaction(c2, "Notebook Dell", "Electronics", new BigDecimal("299.90"),
-                                        "3/12",
-                                        new BigDecimal("3598.80"));
-                        t3.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174002"));
-
-                        Transaction t4 = new Transaction(c2, "Spotify", "Streaming", new BigDecimal("21.90"), "1/1",
-                                        new BigDecimal("21.90"));
-                        t4.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174003"));
-
-                        Transaction t7 = new Transaction(c1, "Netflix", "Streaming", new BigDecimal("55.90"), "1/1",
-                                        new BigDecimal("55.90"));
-                        t7.setId(UUID.fromString("423e4567-e89b-12d3-a456-426614174004"));
-                        transactionRepository.saveAll(Arrays.asList(t1, t2, t3, t4, t7));
-
-                        // Incomes (Incomes)
-                        Income r1 = new Income(u1, "Monthly Salary", "Salário", new BigDecimal("8500.00"), 5);
-                        r1.setId(UUID.fromString("523e4567-e89b-12d3-a456-426614174000"));
-
-                        Income r2 = new Income(u1, "Meal Voucher", "Benefício", new BigDecimal("900.00"), 1);
-                        r2.setId(UUID.fromString("523e4567-e89b-12d3-a456-426614174001"));
-
-                        Income r3 = new Income(u1, "NuBank Earnings", "Investimento", new BigDecimal("150.45"), 15);
-                        r3.setId(UUID.fromString("523e4567-e89b-12d3-a456-426614174002"));
-
-                        Income r4 = new Income(u2, "Salário", "Salário", new BigDecimal("6200.00"), 5);
-                        r4.setId(UUID.fromString("523e4567-e89b-12d3-a456-426614174003"));
-
-                        Income r5 = new Income(u2, "Home Office Allowance", "Benefício", new BigDecimal("200.00"), 5);
-                        r5.setId(UUID.fromString("523e4567-e89b-12d3-a456-426614174004"));
-
-                        Income r6 = new Income(u2, "Cake Sale", "Extra", new BigDecimal("450.00"), 20);
-                        r6.setId(UUID.fromString("523e4567-e89b-12d3-a456-426614174005"));
-                        incomeRepository.saveAll(Arrays.asList(r1, r2, r3, r4, r5, r6));
-
-                        // Recurring Expenses
-                        RecurringExpense gr1 = new RecurringExpense(u1, "Credit Card", "Netflix", "Streaming",
-                                        new BigDecimal("55.90"));
-                        gr1.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174000"));
-
-                        RecurringExpense gr2 = new RecurringExpense(u1, "Direct Debit", "Academia SmartFit", "Health",
-                                        new BigDecimal("89.90"));
-                        gr2.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174001"));
-
-                        RecurringExpense gr3 = new RecurringExpense(u2, "PIX", "Spotify Premium", "Streaming",
-                                        new BigDecimal("21.90"));
-                        gr3.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174002"));
-
-                        RecurringExpense gr4 = new RecurringExpense(u2, "Credit Card", "Amazon Prime", "Streaming",
-                                        new BigDecimal("14.90"));
-                        gr4.setId(UUID.fromString("623e4567-e89b-12d3-a456-426614174003"));
-                        recurringExpenseRepository.saveAll(Arrays.asList(gr1, gr2, gr3, gr4));
 
                         System.out.println("Database seeded successfully with Java objects!");
                 }

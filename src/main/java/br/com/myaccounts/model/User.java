@@ -31,4 +31,8 @@ public class User extends BaseEntity<UUID> {
     private String role;
 
     private String avatarUrl;
+
+    @Column(nullable = false, columnDefinition = "integer default 1")
+    private Integer viewingIntervalStartDay = 1;
+
 }

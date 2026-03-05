@@ -1,142 +1,88 @@
 package br.com.myaccounts.service;
 
+import br.com.myaccounts.dto.transaction.MonthSummary;
 import br.com.myaccounts.model.Transaction;
+import br.com.myaccounts.model.User;
+import br.com.myaccounts.model.enums.TransactionType;
 import br.com.myaccounts.repository.TransactionRepository;
+import br.com.myaccounts.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TransactionServiceTest {
-
-    @InjectMocks
-    private TransactionService transactionService;
 
     @Mock
     private TransactionRepository transactionRepository;
 
     @Mock
-    private SecurityContext securityContext;
+    private UserRepository userRepository;
 
-    @Mock
-    private Authentication authentication;
+    @InjectMocks
+    private TransactionService transactionService;
 
-    private Transaction transaction;
-    private final UUID TRAN_ID = UUID.randomUUID();
-    private final String EMAIL_MOCK = "test@test.com";
+    private User mockUser;
 
     @BeforeEach
     void setUp() {
-        transaction = new Transaction();
-        transaction.setId(TRAN_ID);
-        transaction.setDescription("Test Transaction");
-    }
+        mockUser = new User();
+        mockUser.setId(UUID.randomUUID());
+        mockUser.setEmail("test@test.com");
+        mockUser.setViewingIntervalStartDay(10); // user custom day
 
-    private void mockSecurityContext() {
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn(EMAIL_MOCK);
+        Authentication auth = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(auth);
+        when(auth.getName()).thenReturn("test@test.com");
         SecurityContextHolder.setContext(securityContext);
     }
 
-    @Nested
-    @DisplayName("Method FindAll")
-    class FindAll {
+    @Test
+    void getMonthSummary_shouldCalculatePendingAndLeftoverCorrectly() {
+        when(userRepository.findByEmail("test@test.com")).thenReturn(Optional.of(mockUser));
 
-        @Test
-        @DisplayName("Should return transactions within the period with authenticated user")
-        void shouldFindTransactionsWithinPeriod() {
-            // GIVEN
-            mockSecurityContext();
-            LocalDateTime start = LocalDateTime.now().minusDays(10);
-            LocalDateTime end = LocalDateTime.now();
-            when(transactionRepository.findAll(any(Specification.class))).thenReturn(Arrays.asList(transaction));
+        Transaction t1 = new Transaction();
+        t1.setType(TransactionType.INCOME);
+        t1.setValue(new BigDecimal("5000.00"));
 
-            // WHEN
-            List<Transaction> result = transactionService.findAll(start, end);
+        Transaction t2 = new Transaction();
+        t2.setType(TransactionType.EXPENSE);
+        t2.setValue(new BigDecimal("1000.00"));
+        t2.setIsPaid(false); // pending
 
-            // THEN
-            assertNotNull(result);
-            assertEquals(1, result.size());
-            assertEquals("Test Transaction", result.get(0).getDescription());
-            verify(transactionRepository, times(1)).findAll(any(Specification.class));
-        }
-    }
+        Transaction t3 = new Transaction();
+        t3.setType(TransactionType.EXPENSE);
+        t3.setValue(new BigDecimal("500.00"));
+        t3.setIsPaid(true); // already paid, should not count towards pending
 
-    @Nested
-    @DisplayName("Method FindById")
-    class FindById {
+        when(transactionRepository.findFilteredTransactions(eq(mockUser), any(LocalDate.class), any(LocalDate.class),
+                eq(null)))
+                .thenReturn(Arrays.asList(t1, t2, t3));
 
-        @Test
-        @DisplayName("Should return transaction when it exists and user has permission")
-        void shouldReturnTransaction_whenFoundAndAllowed() {
-            // GIVEN
-            mockSecurityContext();
-            when(transactionRepository.findOne(any(Specification.class))).thenReturn(Optional.of(transaction));
+        MonthSummary summary = transactionService.getMonthSummary();
 
-            // WHEN
-            Optional<Transaction> result = transactionService.findById(TRAN_ID);
-
-            // THEN
-            assertTrue(result.isPresent());
-            assertEquals(TRAN_ID, result.get().getId());
-            verify(transactionRepository, times(1)).findOne(any(Specification.class));
-        }
-    }
-
-    @Nested
-    @DisplayName("Method Save")
-    class Save {
-
-        @Test
-        @DisplayName("Should save and return transaction successfully")
-        void shouldSaveSuccessfully() {
-            // GIVEN
-            when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
-
-            // WHEN
-            Transaction result = transactionService.save(transaction);
-
-            // THEN
-            assertNotNull(result);
-            assertEquals("Test Transaction", result.getDescription());
-            verify(transactionRepository, times(1)).save(any(Transaction.class));
-        }
-    }
-
-    @Nested
-    @DisplayName("Method DeleteById")
-    class DeleteById {
-
-        @Test
-        @DisplayName("Should delete the transaction by ID")
-        void shouldDeleteSuccessfully() {
-            // GIVEN
-            doNothing().when(transactionRepository).deleteById(TRAN_ID);
-
-            // WHEN
-            transactionService.deleteById(TRAN_ID);
-
-            // THEN
-            verify(transactionRepository, times(1)).deleteById(TRAN_ID);
-        }
+        // Leftover calculation: Income (5000) - Pending to Pay (1000) = 4000
+        assertEquals(new BigDecimal("1000.00"), summary.getPendingToPay());
+        assertEquals(new BigDecimal("4000.00"), summary.getLeftover());
+        assertEquals(3, summary.getPeriodTransactions().size());
     }
 }

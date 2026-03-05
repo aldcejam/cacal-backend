@@ -1,56 +1,54 @@
 package br.com.myaccounts.controller;
 
+import br.com.myaccounts.dto.transaction.MonthSummary;
+import br.com.myaccounts.dto.transaction.TransactionFilterDto;
 import br.com.myaccounts.dto.transaction.TransactionFindRes;
 import br.com.myaccounts.dto.transaction.TransactionSaveReq;
-import br.com.myaccounts.dto.transaction.TransactionSaveRes;
-import br.com.myaccounts.model.Card;
-import br.com.myaccounts.model.Transaction;
 import br.com.myaccounts.service.TransactionService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
+@RequiredArgsConstructor
 public class TransactionController {
 
-    @Autowired
-    private TransactionService service;
+    private final TransactionService transactionService;
 
     @GetMapping
-    public ResponseEntity<List<TransactionFindRes>> findAll(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        List<TransactionFindRes> result = service.findAll(start, end).stream()
-                .map(TransactionFindRes::fromEntity)
-                .toList();
-        return ResponseEntity.ok(result);
+    public List<TransactionFindRes> getAll(TransactionFilterDto filter) {
+        return transactionService.getTransactions(filter);
+    }
+
+    @GetMapping("/summary")
+    public MonthSummary getSummary() {
+        return transactionService.getMonthSummary();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TransactionFindRes> findById(@PathVariable UUID id) {
-        return service.findById(id)
-                .map(TransactionFindRes::fromEntity)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public TransactionFindRes getById(@PathVariable UUID id) {
+        return transactionService.findById(id);
     }
 
     @PostMapping
-    public ResponseEntity<TransactionSaveRes> save(@Valid @RequestBody TransactionSaveReq req) {
-        Card card = service.findCardById(req.getCardId());
-        Transaction saved = service.save(req.toEntity(card));
-        return ResponseEntity.ok(TransactionSaveRes.fromEntity(saved));
+    @ResponseStatus(HttpStatus.CREATED)
+    public TransactionFindRes create(@RequestBody @Valid TransactionSaveReq req) {
+        return transactionService.save(req);
+    }
+
+    @PutMapping("/{id}")
+    public TransactionFindRes update(@PathVariable UUID id, @RequestBody @Valid TransactionSaveReq req) {
+        return transactionService.update(id, req);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable UUID id) {
-        service.deleteById(id);
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable UUID id) {
+        transactionService.delete(id);
     }
 }
